@@ -5,8 +5,8 @@
       "name": "项目依赖与脚手架扩充",
       "description": "安装 PRD 指定依赖：@tauri-apps/plugin-sql、plugin-dialog、plugin-fs；Element Plus、@iconify/vue、Vditor、Pinia、Vue Router、VueUse。配置 @ 路径别名（vite.config.ts + tsconfig.json）。配置 plugin-sql 的 capabilities。",
       "dependencies": [],
-      "status": "not-started",
-      "evidence": ""
+      "status": "done",
+      "evidence": "pnpm build (vue-tsc + vite build, 1619 modules, 4.39s) ✅；cargo check (sqlx 0.8.6 + tauri-plugin-sql 2.4.0, 1m24s) ✅；pnpm tauri dev 烟测（vite ready + nook 窗口 + element-plus/es 运行时按需引入生效）✅。详见 logs/2026-08-25.md feat-001 段。"
     },
     {
       "id": "feat-002",

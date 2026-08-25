@@ -1,9 +1,9 @@
 ## Current State
 
-**Last Updated:** 2026-08-25 **Active Feature:** 无（harness 刚落地，未开工）
-**What's Done / What's In Progress / What's Next:** 见下方「当前已验证状态」段
-**Blockers / Risks:** 无（Rust 1.98 环境就绪，esbuild 构建脚本已放行）
-**Evidence of Completion:** `[command and output]` 见下方「标准验证路径」
+**Last Updated:** 2026-08-25 **Active Feature:** feat-002（feat-001 已完成）
+**What's Done / What's In Progress / What's Next:** feat-001 done；下一个 feat-002 基础布局
+**Blockers / Risks:** 无（Rust 1.98 环境就绪，esbuild 构建脚本已放行，PRD 全部依赖已装）
+**Evidence of Completion:** `pnpm build` + `cargo check` + `pnpm tauri dev` 烟测全过；见 `logs/2026-08-25.md` feat-001 段
 **Notes for Next Session:** 详细当前状态与会话历史见下方「当前已验证状态」与「会话记录」段
 
 ---
@@ -24,10 +24,11 @@
   - 记录一致性：`bash scripts/check-records.sh`（挂进 `./init.sh`）
   - 一键全量验证：`./init.sh`
 - **当前最高优先级未完成功能**：
-  1. **feat-001 项目依赖与脚手架扩充未做**：PRD 指定依赖（plugin-sql/dialog/fs、Element Plus、Iconify、Vditor、Pinia、Vue Router、VueUse）尚未安装，`@` 路径别名未配置。这是所有后续功能的前置。
-  2. 之后按 `feature_list.json` 依赖顺序推进 feat-002 → feat-003 → ...
-- **当前 blocker**：无。脚手架为官方 `npm create tauri@latest` 产物，`pnpm tauri dev` 已验证可起窗口。PRD 已评审修订到 v1.1（建表 SQL 补 PRAGMA + 子表外键、打包补 arm64、导入校验改魔数头）。
-- **前端代码基线**：脚手架自带的模板文件未动，仍是 `npm create tauri@latest -- --template vue-ts` 原样——`src/App.vue`、`src/main.ts`、`src/vite-env.d.ts`、`src/components/` 下默认样例、`src/views/`（暂无）。feat-001 起开始改写。
+  1. **feat-001 已完成**（项目依赖与脚手架扩充）：PRD 全部依赖装齐（plugin-sql/dialog/fs、Element Plus、Iconify、Vditor、Pinia、Vue Router、VueUse）+ `@` 别名 + Element Plus 按需自动引入 + capabilities 授权。`pnpm build` + `cargo check` + `pnpm tauri dev` 烟测全过。
+  2. **下一个 feat-002 基础布局**（侧边栏 + 内容区 + 顶部搜索）：PRD「整体架构与布局设计」。依赖 feat-001，已解锁。
+  3. 之后按 `feature_list.json` 依赖顺序推进 feat-003 → feat-004 → ...
+- **当前 blocker**：无。feat-001 地基已铺好，所有后续 feature 的前置（依赖/别名/按需引入/capabilities）就位。
+- **前端代码基线**：feat-001 已改写脚手架模板——`src/App.vue`（改为 `<RouterView/>` + 白色根）、`src/main.ts`（挂 pinia + router）、新增 `src/stores/index.ts`、`src/router/index.ts`、`src/views/HomeView.vue`（验证页，含 `el-button`）；`vite.config.ts` 加 AutoImport + Components + @ 别名；`tsconfig.json` 加 baseUrl/paths/auto-imports.d.ts/components.d.ts；`src-tauri/Cargo.toml` 补 sqlite feature、`src-tauri/src/lib.rs` 注册三插件、`capabilities/default.json` 授权。`auto-imports.d.ts`、`components.d.ts` 由 vite build 生成。
 - **收尾纪律（每轮必做）**：验证命令跑过 → `logs/YYYY-MM-DD.md` 追加改动记录 → 本文件"当前已验证状态"与实际对齐（过期即改）。详见 `AGENTS.md` 初始化与交接一节。
 - **今日 harness 工程化落地**：参照 `hbrb-aigc-frontend` 的标准 harness 范式，为 nook 搭建同款：路由器式 `AGENTS.md`（14 条硬约束，按 Vue/Element Plus/Tauri 栈改写）+ 自包含 `CLAUDE.md` + `feature_list.json`（12 个 feature，对齐 PRD V1 范围）+ `feature_list.schema.json` + `init.sh`（pnpm install/build + cargo check + check-records）+ `scripts/check-records.sh`（适配 src/ + src-tauri/src，扫 .vue/.ts/.rs）+ `progress.md`（英文 Current State 头）+ `session-handoff.md` + `logs/2026-08-25.md` + `rules/`×4（project-structure/tauri-ipc/db/style）。PRD 评审修订同步记录于 `logs/2026-08-25.md`。
 
@@ -49,3 +50,18 @@
 - **提交记录**：无（nook 非 git 仓库，待用户决定是否 init）。
 - **已知风险或未解决问题**：① nook 尚未 `git init`，无版本控制；② PRD 指定依赖未装，feat-001 未做；③ CSP 设为 null（纯本地可接受，接外部内容前再收紧）；④ 无 schema migration 机制（V1 够用，V2 加字段时再说）。
 - **下一步最佳动作**：执行 feat-001（装依赖 + 配 @ 别名 + 配 capabilities），然后 feat-002 基础布局 + feat-003 数据库初始化模块。
+
+### 2026-08-25 — feat-001 项目依赖与脚手架扩充
+
+- **本轮目标**：执行 feat-001——装齐 PRD 指定全部依赖，配 `@` 路径别名、Element Plus 按需自动引入、plugin-sql/dialog/fs capabilities，为 feat-002~012 铺地基。
+- **已完成**：
+  - **Tauri 插件**：`pnpm tauri add` 装 plugin-sql / plugin-dialog / plugin-fs，注册进 `src-tauri/src/lib.rs`、授权进 `src-tauri/capabilities/default.json`。
+  - **关键修复**：`tauri add sql` 漏写 `features = ["sqlite"]`，`src-tauri/Cargo.toml` 手改为 `tauri-plugin-sql = { version = "2", features = ["sqlite"] }`。
+  - **前端依赖**：element-plus、@iconify/vue、vditor、pinia、vue-router、@vueuse/core；构建插件 unplugin-vue-components、unplugin-auto-import。
+  - **配置**：`vite.config.ts` 加 AutoImport + Components(ElementPlusResolver) + @ 别名；`tsconfig.json` 加 baseUrl/paths + auto-imports.d.ts/components.d.ts。
+  - **代码**：`src/main.ts` 改写（pinia + router）；`src/App.vue` 改 `<RouterView/>` + 白底；新增 `src/stores/index.ts`、`src/router/index.ts`、`src/views/HomeView.vue`（`el-button` 验证按需引入）。
+- **运行过的验证**：`pnpm build`（1619 modules，4.39s）✅；`cd src-tauri && cargo check`（sqlx 0.8.6，1m24s）✅；`pnpm tauri dev` 烟测（vite ready + nook 窗口 + element-plus/es 运行时按需引入生效）✅。后停掉 dev 进程。
+- **改动文件**：`src-tauri/Cargo.toml`、`src-tauri/src/lib.rs`、`src-tauri/capabilities/default.json`、`vite.config.ts`、`tsconfig.json`、`src/main.ts`、`src/App.vue`、`src/stores/index.ts`（新）、`src/router/index.ts`（新）、`src/views/HomeView.vue`（新）、`auto-imports.d.ts`（生成）、`components.d.ts`（生成）、`package.json`、`pnpm-lock.yaml`。
+- **提交记录**：无（feat-001 改动尚未 commit，待用户决定。仓库已建为公开开源，git@github.com:dev-wangqiuyu/nook.git）。
+- **已知风险或未解决问题**：① `src-tauri/src/lib.rs` 仍留模板自带的 `greet` command（死代码无害，feat-002 清理）；② CSP 仍为 null（纯本地可接受，接外部内容前再收紧）；③ 无 schema migration（V1 够用）；④ `vue-router` latest tag 解析到 5.x（major），已验证可用但留意后续 API 变动。
+- **下一步最佳动作**：执行 feat-002 基础布局（侧边栏 + 内容区 + 顶部搜索 + Vue Router 路由表），依赖 feat-001 已解锁。
