@@ -177,3 +177,11 @@
 - **改动文件**：`rules/db.md`。
 - **运行过的验证**：check-records 门禁通过（文档级改动，未改代码基线）。
 - **下一步最佳动作**：执行 feat-005 每日计划/待办模块。
+
+### 2026-08-25 — 新增 SQL 从入门到精通学习文档
+
+- **本轮目标**：用户要求系统讲一遍 SQL 常见知识（入门到精通、不高深、常见 CRUD），写成学习文档存档。
+- **已完成**：新建 `docs/sql-tutorial.md`——紧扣 Nook 表结构（task/note/tag/task_tag）的 SQL 指南，十大章：语句四大类 → SELECT 全解（WHERE/ORDER BY/分页/聚合/GROUP BY+HAVING/JOIN/子查询/CASE/集合运算）→ INSERT（含 OR IGNORE / ON CONFLICT upsert）→ UPDATE → DELETE（DELETE/DROP/TRUNCATE 对比）→ NULL 三值逻辑 → 常用函数 → 索引 → 事务 ACID → PRAGMA → 安全性能心法 + Nook 实战查询对照表。
+- **改动文件**：`docs/sql-tutorial.md`（新）。
+- **运行过的验证**：纯文档新增，check-records 门禁不受影响。
+- **下一步最佳动作**：执行 feat-005 每日计划/待办模块。
