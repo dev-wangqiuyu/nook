@@ -1,10 +1,43 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "@/views/HomeView.vue";
+import type { RouteRecordRaw } from "vue-router";
 
-// 占位路由。真正的侧边栏布局与各模块路由在 feat-002 落地。
+// 路由表。feat-002 落地基础布局，各模块先占位，真实页面在对应 feature 实现。
+const routes: RouteRecordRaw[] = [
+  {
+    path: "/",
+    name: "home",
+    component: () => import("@/views/home/HomeView.vue"),
+    meta: { title: "首页" },
+  },
+  {
+    path: "/todo",
+    name: "todo",
+    component: () => import("@/views/todo/TodoView.vue"),
+    meta: { title: "待办" },
+  },
+  {
+    path: "/note",
+    name: "note",
+    component: () => import("@/views/note/NoteView.vue"),
+    meta: { title: "笔记" },
+  },
+  {
+    path: "/order",
+    name: "order",
+    component: () => import("@/views/order/OrderView.vue"),
+    meta: { title: "订单" },
+  },
+  {
+    path: "/settings",
+    name: "settings",
+    component: () => import("@/views/settings/SettingsView.vue"),
+    meta: { title: "设置" },
+  },
+];
+
 const router = createRouter({
   history: createWebHistory(),
-  routes: [{ path: "/", name: "home", component: HomeView }],
+  routes,
 });
 
 export default router;

@@ -13,8 +13,8 @@
       "name": "基础布局（侧边栏 + 内容区 + 顶部搜索）",
       "description": "PRD「整体架构与布局设计」。左侧固定宽度侧边栏（首页/待办/笔记/订单/设置，分隔线分设置），右侧内容区，顶部全局搜索框。Vue Router 路由表配置。全应用白色极简。",
       "dependencies": ["feat-001"],
-      "status": "not-started",
-      "evidence": ""
+      "status": "done",
+      "evidence": "pnpm build (vue-tsc + vite build, 50 modules, 533ms, 路由 code-split) ✅；cargo check (0.66s) ✅；pnpm tauri dev 烟测（vite ready + nook 窗口 + 无运行时错误）✅。详见 logs/2026-08-25.md feat-002 段。"
     },
     {
       "id": "feat-003",

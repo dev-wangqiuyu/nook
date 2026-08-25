@@ -11,7 +11,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    ElButton: typeof import('element-plus/es')['ElButton']
+    AppSidebar: typeof import('./src/components/layout/AppSidebar.vue')['default']
+    AppTopbar: typeof import('./src/components/layout/AppTopbar.vue')['default']
+    PageShell: typeof import('./src/components/layout/PageShell.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

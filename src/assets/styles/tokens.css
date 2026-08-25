@@ -1,0 +1,106 @@
+/* design tokens —— "Quiet Stationery" 暖纸极简（PRD #10 白色极简）。
+   全应用颜色/字体/间距/动效集中于此，组件只引用变量，不散落硬编码。 */
+
+:root {
+  /* —— 纸面：暖白，非纯白 —— */
+  --paper: #fbfbf9; /* 主背景 */
+  --paper-soft: #f5f3ee; /* 侧边栏 / 分区底 */
+  --paper-raise: #ffffff; /* 卡片浮起 */
+  --paper-tint: #f1efe8; /* hover 底 */
+
+  /* —— 墨色：文字层级 —— */
+  --ink: #1c1b19; /* 正文 */
+  --ink-soft: #5c5a55; /* 次要 */
+  --ink-mute: #9a978f; /* 占位 / 禁用 */
+
+  /* —— 发丝分隔：替代重阴影 —— */
+  --hairline: #e7e3da;
+  --hairline-strong: #d9d4c8;
+
+  /* —— 仪式金：唯一强调色，克制使用（active / 品牌 / 宇宙订单卡）—— */
+  --accent: #b08a3e;
+  --accent-ink: #8a6a26;
+  --accent-soft: #efe6cf;
+
+  /* —— 字体 —— */
+  /* 标题 / 品牌字标：编辑体衬线，mac→New York，跨平台回退 Georgia */
+  --font-serif: "New York", "Iowan Old Style", "Songti SC", "Noto Serif SC", Georgia, "PingFang SC", serif;
+  /* 正文 / UI：系统 CJK 无衬线（离线桌面应用，不引网络字体，硬约束 #9） */
+  --font-sans: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui, -apple-system, sans-serif;
+  /* 等宽（路径、代码） */
+  --font-mono: "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+
+  /* —— 间距 / 尺寸 —— */
+  --side-w: 224px; /* 侧边栏宽 */
+  --topbar-h: 60px; /* 顶栏高 */
+  --radius: 10px;
+  --radius-sm: 6px;
+  --space-xs: 6px;
+  --space-sm: 10px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+
+  /* —— 动效 —— */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-fast: 0.16s;
+  --dur: 0.28s;
+  --dur-slow: 0.5s;
+}
+
+/* —— 全局基底 —— */
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+body {
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+
+/* 暖纸微颗粒纹理：极弱，仅给侧边栏一点纸的呼吸感（纯 SVG data-uri，离线） */
+.grain {
+  position: relative;
+}
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+/* 滚动条：细而静 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--hairline-strong);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-mute);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 选中态：用仪式金淡底 */
+::selection {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}

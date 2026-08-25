@@ -129,6 +129,7 @@ cd src-tauri && cargo check   # Rust 后端编译检查
 13. ❌ 禁 `console.log` 遗留在正式代码中（调试除外，提交前清除）
 14. ❌ 禁 Element Plus 废弃 API 与静态调用（按 PRD 选用稳定 API，弹窗用 ElMessageBox / ElMessage）
 15. ✅ 设计前端页面前必须先用 Skill 工具调用 `frontend-design` skill（见 [rules/style.md](rules/style.md)「设计流程」段，含与白色极简约束的调和）
+16. ❌ 禁 Options API：所有 .vue 组件必须用 `<script setup lang="ts">`，props/emit 用 `defineProps<{}>()`/`defineEmits<{}>()` 泛型签名（见 [rules/vue.md](rules/vue.md)）
 
 ## 专题文档
 
@@ -138,3 +139,4 @@ cd src-tauri && cargo check   # Rust 后端编译检查
 | [rules/tauri-ipc.md](rules/tauri-ipc.md) | plugin-sql / dialog / fs / 托盘 用法、IPC 命令、capabilities | 调 Tauri 原生能力时 |
 | [rules/db.md](rules/db.md) | SQLite 操作规范、PRAGMA、参数绑定、时间格式、级联、导入校验 | 写数据库相关代码时 |
 | [rules/style.md](rules/style.md) | Element Plus + 白色极简、Iconify 用法、布局规则、frontend-design skill 流程与调和 | 写界面/样式时 |
+| [rules/vue.md](rules/vue.md) | Vue 3 `<script setup>` / 组合式函数 / props-emits / 命名 | 写任何 .vue 组件时 |

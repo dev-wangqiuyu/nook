@@ -15,9 +15,8 @@
     "jsx": "preserve",
 
     /* @ 路径别名 */
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
 
     /* Linting */

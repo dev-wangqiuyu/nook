@@ -45,6 +45,9 @@ importers:
         specifier: ^5.2.0
         version: 5.2.0(@vue/compiler-sfc@3.5.41)(esbuild@0.25.0)(pinia@4.0.3(@vue/devtools-api@8.2.1)(typescript@5.6.2)(vue@3.5.41(typescript@5.6.2)))(rollup@4.62.5)(vite@6.4.3(yaml@2.9.0))(vue@3.5.41(typescript@5.6.2))
     devDependencies:
+      '@iconify-json/lucide':
+        specifier: ^1.2.125
+        version: 1.2.125
       '@tauri-apps/cli':
         specifier: ^2
         version: 2.11.4
@@ -274,6 +277,9 @@ packages:
 
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
+
+  '@iconify-json/lucide@1.2.125':
+    resolution: {integrity: sha512-tOCk1QKMtKnCfPAgZRHgjRkQTP7wF5IO+iPKvvp8vxGZYPkSLhx4HTV3Ng0pIZ3wNWrS6kVpHkunJ1dc19L1og==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -1184,6 +1190,10 @@ snapshots:
       '@floating-ui/utils': 0.2.12
 
   '@floating-ui/utils@0.2.12': {}
+
+  '@iconify-json/lucide@1.2.125':
+    dependencies:
+      '@iconify/types': 2.0.0
 
   '@iconify/types@2.0.0': {}
 

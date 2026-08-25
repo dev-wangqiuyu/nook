@@ -1,9 +1,9 @@
 ## Current State
 
-**Last Updated:** 2026-08-25 **Active Feature:** feat-002（feat-001 已完成）
-**What's Done / What's In Progress / What's Next:** feat-001 done；下一个 feat-002 基础布局
-**Blockers / Risks:** 无（Rust 1.98 环境就绪，esbuild 构建脚本已放行，PRD 全部依赖已装）
-**Evidence of Completion:** `pnpm build` + `cargo check` + `pnpm tauri dev` 烟测全过；见 `logs/2026-08-25.md` feat-001 段
+**Last Updated:** 2026-08-25 **Active Feature:** feat-003（feat-001/002 已完成）
+**What's Done / What's In Progress / What's Next:** feat-001/002 done；下一个 feat-003 数据库初始化
+**Blockers / Risks:** 无（Rust 1.98 就绪、PRD 依赖装齐、布局壳落地、Composition API 规范写入）
+**Evidence of Completion:** `pnpm build` + `cargo check` + `pnpm tauri dev` 烟测全过；见 `logs/2026-08-25.md` feat-002 段
 **Notes for Next Session:** 详细当前状态与会话历史见下方「当前已验证状态」与「会话记录」段
 
 ---
@@ -24,11 +24,12 @@
   - 记录一致性：`bash scripts/check-records.sh`（挂进 `./init.sh`）
   - 一键全量验证：`./init.sh`
 - **当前最高优先级未完成功能**：
-  1. **feat-001 已完成**（项目依赖与脚手架扩充）：PRD 全部依赖装齐（plugin-sql/dialog/fs、Element Plus、Iconify、Vditor、Pinia、Vue Router、VueUse）+ `@` 别名 + Element Plus 按需自动引入 + capabilities 授权。`pnpm build` + `cargo check` + `pnpm tauri dev` 烟测全过。
-  2. **下一个 feat-002 基础布局**（侧边栏 + 内容区 + 顶部搜索）：PRD「整体架构与布局设计」。依赖 feat-001，已解锁。
-  3. 之后按 `feature_list.json` 依赖顺序推进 feat-003 → feat-004 → ...
-- **当前 blocker**：无。feat-001 地基已铺好，所有后续 feature 的前置（依赖/别名/按需引入/capabilities）就位。
-- **前端代码基线**：feat-001 已改写脚手架模板——`src/App.vue`（改为 `<RouterView/>` + 白色根）、`src/main.ts`（挂 pinia + router）、新增 `src/stores/index.ts`、`src/router/index.ts`、`src/views/HomeView.vue`（验证页，含 `el-button`）；`vite.config.ts` 加 AutoImport + Components + @ 别名；`tsconfig.json` 加 baseUrl/paths/auto-imports.d.ts/components.d.ts；`src-tauri/Cargo.toml` 补 sqlite feature、`src-tauri/src/lib.rs` 注册三插件、`capabilities/default.json` 授权。`auto-imports.d.ts`、`components.d.ts` 由 vite build 生成。
+  1. **feat-001 已完成**（项目依赖与脚手架扩充）。
+  2. **feat-002 已完成**（基础布局）：侧边栏（首页/待办/笔记/订单+分隔线+设置，Iconify lucide 离线图标，仪式金 active 条）+ 顶栏搜索框（P1 占位）+ 内容区 RouterView + 五路由懒加载 + 各模块占位页（`SettingsView.vue` 等）+ design tokens（Quiet Stationery 暖纸极简）。`pnpm build` + `cargo check` + `pnpm tauri dev` 烟测全过。
+  3. **下一个 feat-003 数据库初始化模块**：连接 nook.db + PRAGMA foreign_keys=ON/WAL + 全部 CREATE TABLE IF NOT EXISTS + SQL 执行封装。依赖 feat-001，已解锁。
+  4. 之后按 `feature_list.json` 依赖顺序推进 feat-004 → feat-005 → ...
+- **当前 blocker**：无。布局壳落地，Composition API 规范已写入 harness，后续模块有统一视觉与代码基底。
+- **前端代码基线**：feat-002 落地布局——`src/App.vue`（布局壳）、`src/main.ts`（引 tokens.css + 离线注册 lucide 图标）、`src/assets/styles/tokens.css`（design tokens）、`src/components/layout/`（AppSidebar/AppTopbar/PageShell）、`src/router/index.ts`（五路由懒加载）、`src/views/{home,todo,note,order,settings}/`（占位页用 PageShell）。feat-001 的 `src/views/HomeView.vue` 已迁至 `views/home/`。
 - **收尾纪律（每轮必做）**：验证命令跑过 → `logs/YYYY-MM-DD.md` 追加改动记录 → 本文件"当前已验证状态"与实际对齐（过期即改）。详见 `AGENTS.md` 初始化与交接一节。
 - **今日 harness 工程化落地**：参照 `hbrb-aigc-frontend` 的标准 harness 范式，为 nook 搭建同款：路由器式 `AGENTS.md`（14 条硬约束，按 Vue/Element Plus/Tauri 栈改写）+ 自包含 `CLAUDE.md` + `feature_list.json`（12 个 feature，对齐 PRD V1 范围）+ `feature_list.schema.json` + `init.sh`（pnpm install/build + cargo check + check-records）+ `scripts/check-records.sh`（适配 src/ + src-tauri/src，扫 .vue/.ts/.rs）+ `progress.md`（英文 Current State 头）+ `session-handoff.md` + `logs/2026-08-25.md` + `rules/`×4（project-structure/tauri-ipc/db/style）。PRD 评审修订同步记录于 `logs/2026-08-25.md`。
 
@@ -81,3 +82,26 @@
 - **改动文件**：`PRD产品需求文档.md`、`README.md`、`rules/tauri-ipc.md`、`rules/db.md`、`feature_list.json`。
 - **运行过的验证**：grep 确认无拋留。纯文档，无构建。
 - **下一步最佳动作**：执行 feat-002 基础布局（动手前先调 `frontend-design` skill）。
+
+### 2026-08-25 — harness: Vue 3 Composition API 规范
+
+- **本轮目标**：按用户要求，把 Vue 3 官方推荐 Composition API 工程化写法写进 harness。
+- **已完成**：新建 `rules/vue.md`（`<script setup>` 强制 / 响应式 / 类型化 props-emits-model / composable 抽离门槛 / 命名 / 禁 any）；`AGENTS.md` 加硬约束 #16（禁 Options API）+ 专题文档表加 vue 行；`CLAUDE.md` 必做第 2 步 rules 列表加 vue。
+- **改动文件**：`rules/vue.md`（新）、`AGENTS.md`、`CLAUDE.md`。
+- **运行过的验证**：纯文档，无构建。feat-002 组件已按此规范写。
+- **下一步最佳动作**：feat-002 已完成，执行 feat-003 数据库初始化模块。
+
+### 2026-08-25 — feat-002 基础布局（侧边栏 + 内容区 + 顶部搜索）
+
+- **本轮目标**：执行 feat-002——落地 PRD「整体架构与布局设计」，为所有业务模块铺视觉与路由地基。调 frontend-design skill（#15）。
+- **已完成**：
+  - **设计方向**：Quiet Stationery 暖纸极简（暖白纸面色 + 墨色文字 + 发丝分隔 + 仪式金强调色 + 衬线品牌字标 + 暖纸微颗粒纹理）；白色极简（#10）优先级 > frontend-design skill 的"主题变化"。
+  - **离线图标**：装 `@iconify-json/lucide`（devDep），`main.ts` `addCollection(lucide)` 注册，避免 @iconify/vue 默认 API 拉取（违反 #9）。
+  - **tokens**：`src/assets/styles/tokens.css` 集中色板/字体/间距/动效 CSS 变量。
+  - **布局组件**：`App.vue`（壳）、`AppSidebar.vue`（品牌字标+主导航+设置，金条 active，staggered 入场）、`AppTopbar.vue`（下划线搜索框，P1 占位）、`PageShell.vue`（类型化 props+插槽，各页复用）。
+  - **路由+占位页**：`router/index.ts` 五路由懒加载；`views/{home,todo,note,order,settings}/` 各占位页用 PageShell；删旧 `src/views/HomeView.vue`。
+- **运行过的验证**：`pnpm build`（50 modules，533ms，路由 code-split）✅；`cargo check`（0.66s）✅；`pnpm tauri dev` 烟测（vite ready 286ms + nook 编译 4.20s + 窗口弹出 + 无运行时错误）✅。后停 dev 进程。
+- **改动文件**：`package.json`、`pnpm-lock.yaml`、`src/main.ts`、`src/App.vue`、`src/router/index.ts`、`src/assets/styles/tokens.css`（新）、`src/components/layout/AppSidebar.vue`（新）、`src/components/layout/AppTopbar.vue`（新）、`src/components/layout/PageShell.vue`（新）、`src/views/home/HomeView.vue`（重写）、`src/views/todo/TodoView.vue`（新）、`src/views/note/NoteView.vue`（新）、`src/views/order/OrderView.vue`（新）、`src/views/settings/SettingsView.vue`（新）；删 `src/views/HomeView.vue`。
+- **提交记录**：feat-002 + Composition API 规范尚未 commit，待用户决定。
+- **已知风险或未解决问题**：① index chunk 698KB（lucide 1844 图标离线打包），V1 可接受，后续若需瘦身可改按需 `addIcon` 只注册用到的；② 顶部搜索为占位，实时过滤在 feat-012；③ 字体走系统栈（离线禁网络字体），跨平台衬线回退 Georgia 可接受。
+- **下一步最佳动作**：执行 feat-003 数据库初始化模块（连接 nook.db + PRAGMA + 建表 + SQL 封装）。

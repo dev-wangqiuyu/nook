@@ -16,5 +16,5 @@
 ## 每次会话必做
 
 1. 完整阅读根目录 [AGENTS.md](AGENTS.md)（行为准则 / 硬约束 / 专题路由）。
-2. 动手写代码前，读 `rules/` 中本次任务相关的专题（project-structure / tauri-ipc / db / style）。
+2. 动手写代码前，读 `rules/` 中本次任务相关的专题（project-structure / tauri-ipc / db / style / vue）。
 3. 写完代码执行 `pnpm build` + `cd src-tauri && cargo check`，不报错才算完成。
