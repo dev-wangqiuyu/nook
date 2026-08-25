@@ -4,7 +4,7 @@
 
 ## plugin-sql（SQLite）
 
-- **初始化**：`@tauri-apps/plugin-sql` 的 `Database.load("sqlite:app.db")` 返回连接。**每次拿到连接后立即执行 `PRAGMA foreign_keys = ON;` + `PRAGMA journal_mode = WAL;`**（见 [db.md](db.md)），否则级联删除不生效。
+- **初始化**：`@tauri-apps/plugin-sql` 的 `Database.load("sqlite:nook.db")` 返回连接。**每次拿到连接后立即执行 `PRAGMA foreign_keys = ON;` + `PRAGMA journal_mode = WAL;`**（见 [db.md](db.md)），否则级联删除不生效。
 - **执行 SQL**：`db.execute(sql, params)` / `db.select(sql, params)`。params 用 `$1, $2` 占位符（plugin-sql 走 sqlx，Postgres 风格占位）。
 - **封装**：所有 SQL 调用集中在 `src/api/db.ts` 或 `src/api/<module>.ts`，组件不裸写 SQL。
 
@@ -15,8 +15,8 @@
 
 ## plugin-fs（文件系统）
 
-- 导出备份：读 app.db 所在路径 → 写到 dialog.save() 选的目标位置。
-- 导入恢复：先 `db.close()` 关连接 → 用 fs 覆盖 app.db → 提示重启。
+- 导出备份：读 nook.db 所在路径 → 写到 dialog.save() 选的目标位置。
+- 导入恢复：先 `db.close()` 关连接 → 用 fs 覆盖 nook.db → 提示重启。
 - **导入前校验魔数头**：读文件前 16 字节，验证为 `"SQLite format 3\0"`，否则拒绝（见 [db.md](db.md)）。
 
 ## 托盘 API

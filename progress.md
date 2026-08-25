@@ -73,3 +73,11 @@
 - **改动文件**：`AGENTS.md`、`rules/style.md`。
 - **运行过的验证**：无构建（纯文档）。`check-records.sh` 仅扫代码 mtime，本次未改代码，基线不受影响。
 - **下一步最佳动作**：执行 feat-002 基础布局——动手前先调用 `frontend-design` skill（硬约束 #15）。
+
+### 2026-08-25 — 数据库文件名改名 app.db → nook.db
+
+- **本轮目标**：数据库文件名从 `app.db` 改为 `nook.db`（用户指出更合理）。
+- **已完成**：全量替换 `app.db`/`app\.db` → `nook.db`/`nook\.db`；`app_setting` 表名保留。改动：PRD、README、rules/tauri-ipc.md、rules/db.md、feature_list.json。
+- **改动文件**：`PRD产品需求文档.md`、`README.md`、`rules/tauri-ipc.md`、`rules/db.md`、`feature_list.json`。
+- **运行过的验证**：grep 确认无拋留。纯文档，无构建。
+- **下一步最佳动作**：执行 feat-002 基础布局（动手前先调 `frontend-design` skill）。

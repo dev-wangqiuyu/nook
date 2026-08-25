@@ -201,8 +201,8 @@ npm install element-plus @iconify/vue vditor pinia vue-router @vueuse/core
 
 |操作系统|路径|说明|
 |---|---|---|
-|Windows|%APPDATA%\\com\.nook\.app\\app\.db|如 C:\\Users\\用户名\\AppData\\Roaming\\com\.nook\.app\\app\.db|
-|macOS|\~/Library/Application Support/com\.nook\.app/app\.db|Library 为隐藏目录，需通过「前往文件夹」访问|
+|Windows|%APPDATA%\\com\.nook\.app\\nook\.db|如 C:\\Users\\用户名\\AppData\\Roaming\\com\.nook\.app\\nook\.db|
+|macOS|\~/Library/Application Support/com\.nook\.app/nook\.db|Library 为隐藏目录，需通过「前往文件夹」访问|
 
 卸载应用时，系统应用数据目录中的 SQLite 文件不会被自动删除，重装应用后数据保留。仅当用户手动删除该目录时数据才会丢失。
 
@@ -394,7 +394,7 @@ npm install element-plus @iconify/vue vditor pinia vue-router @vueuse/core
 
 |编号|需求|验收标准|
 |---|---|---|
-|B\-01|导出数据库|点击「导出备份」按钮，弹出系统保存文件对话框，用户选择保存位置后，将应用数据目录中的 app\.db 复制到目标位置|
+|B\-01|导出数据库|点击「导出备份」按钮，弹出系统保存文件对话框，用户选择保存位置后，将应用数据目录中的 nook\.db 复制到目标位置|
 |B\-02|导入数据库|点击「导入恢复」按钮，弹出系统文件选择对话框，用户选择外部 \.db 文件后：先关闭当前数据库连接，再将选中文件覆盖到应用数据目录，最后弹出提示「导入成功，请重启软件」|
 |B\-03|导入确认|导入前弹出确认提示，告知用户「导入将覆盖当前所有数据，是否继续」|
 
@@ -402,11 +402,11 @@ npm install element-plus @iconify/vue vditor pinia vue-router @vueuse/core
 
 ### 操作流程
 
-1. 旧电脑：打开软件 → 设置页 → 点击「导出备份」→ 选择保存位置（如桌面）→ 得到 app\.db 文件
+1. 旧电脑：打开软件 → 设置页 → 点击「导出备份」→ 选择保存位置（如桌面）→ 得到 nook\.db 文件
 
-2. 通过 U 盘/网盘将 app\.db 拷贝到新电脑
+2. 通过 U 盘/网盘将 nook\.db 拷贝到新电脑
 
-3. 新电脑：安装并打开软件（空数据库）→ 设置页 → 点击「导入恢复」→ 选择拷贝过来的 app\.db → 确认覆盖
+3. 新电脑：安装并打开软件（空数据库）→ 设置页 → 点击「导入恢复」→ 选择拷贝过来的 nook\.db → 确认覆盖
 
 4. 按提示重启软件，旧电脑全部数据恢复完成
 

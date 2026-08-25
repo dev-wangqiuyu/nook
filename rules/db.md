@@ -5,7 +5,7 @@
 ## 连接初始化（每次拿到连接后必做）
 
 ```ts
-const db = await Database.load('sqlite:app.db')
+const db = await Database.load('sqlite:nook.db')
 await db.execute('PRAGMA foreign_keys = ON;')      // 必做！否则级联全失效
 await db.execute('PRAGMA journal_mode = WAL;')     // 提升并发读
 // 然后执行全部 CREATE TABLE IF NOT EXISTS
@@ -53,7 +53,7 @@ if (!isSQLite) throw new Error('所选文件不是有效的数据库')
 1. 弹确认提示「导入将覆盖当前所有数据」
 2. 用户确认后 `await db.close()` 关连接（否则文件被占用）
 3. 校验选中文件魔数头
-4. 用 plugin-fs 覆盖 app.db 到应用数据目录
+4. 用 plugin-fs 覆盖 nook.db 到应用数据目录
 5. 提示「导入成功，请重启软件」
 
 ## 表结构

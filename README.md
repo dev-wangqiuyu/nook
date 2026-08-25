@@ -40,8 +40,8 @@ pnpm tauri build        # 生产打包
 
 | 操作系统 | 路径 |
 |---|---|
-| macOS | `~/Library/Application Support/com.nook.app/app.db` |
-| Windows | `%APPDATA%\com.nook.app\app.db` |
+| macOS | `~/Library/Application Support/com.nook.app/nook.db` |
+| Windows | `%APPDATA%\com.nook.app\nook.db` |
 
 ## License
 
