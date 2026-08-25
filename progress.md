@@ -1,9 +1,9 @@
 ## Current State
 
-**Last Updated:** 2026-08-25 **Active Feature:** feat-003（feat-001/002 已完成）
-**What's Done / What's In Progress / What's Next:** feat-001/002 done；下一个 feat-003 数据库初始化
-**Blockers / Risks:** 无（Rust 1.98 就绪、PRD 依赖装齐、布局壳落地、Composition API 规范写入）
-**Evidence of Completion:** `pnpm build` + `cargo check` + `pnpm tauri dev` 烟测全过；见 `logs/2026-08-25.md` feat-002 段
+**Last Updated:** 2026-08-25 **Active Feature:** feat-004（feat-001/002/003 已完成）
+**What's Done / What's In Progress / What's Next:** feat-001/002/003 done；下一个 feat-004 标签管理（首次 CRUD）
+**Blockers / Risks:** 无（Rust 1.98 就绪、PRD 依赖装齐、布局壳落地、DB 初始化跑通、Composition API + 企业级规范写入）
+**Evidence of Completion:** `pnpm build` + `cargo check` + `pnpm tauri dev` 烟测全过 + sqlite3 实测 11 表；见 `logs/2026-08-25.md` feat-003 段
 **Notes for Next Session:** 详细当前状态与会话历史见下方「当前已验证状态」与「会话记录」段
 
 ---
@@ -26,9 +26,9 @@
 - **当前最高优先级未完成功能**：
   1. **feat-001 已完成**（项目依赖与脚手架扩充）。
   2. **feat-002 已完成**（基础布局）：侧边栏（首页/待办/笔记/订单+分隔线+设置，Iconify lucide 离线图标，仪式金 active 条）+ 顶栏搜索框（P1 占位）+ 内容区 RouterView + 五路由懒加载 + 各模块占位页（`SettingsView.vue` 等）+ design tokens（Quiet Stationery 暖纸极简）。`pnpm build` + `cargo check` + `pnpm tauri dev` 烟测全过。
-  3. **下一个 feat-003 数据库初始化模块**：连接 nook.db + PRAGMA foreign_keys=ON/WAL + 全部 CREATE TABLE IF NOT EXISTS + SQL 执行封装。依赖 feat-001，已解锁。
-  4. 之后按 `feature_list.json` 依赖顺序推进 feat-004 → feat-005 → ...
-- **当前 blocker**：无。布局壳落地，Composition API 规范已写入 harness，后续模块有统一视觉与代码基底。
+  3. **feat-003 已完成**（数据库初始化模块）：`src/api/schema.ts`（11 表 DDL，FK CASCADE 全补）+ `src/api/db.ts`（API 层唯一出口：`initDb` 连接单例+PRAGMA+建表 / `getDb` / `query<T>` / `run` / `closeDb`，参数绑定）+ `src/App.vue`（onMounted initDb）。**关键修复**：`capabilities/default.json` 加 `sql:allow-execute`（`sql:default` 不含 execute，建表全被拒）。**dev/prod 分库**：dev 库落项目 `db/nook.db`（`import.meta.env.DEV` + `vite.config.ts` define `__DEV_DB_PATH__` 绝对路径），prod 库落 `app_config_dir`；两套独立库靠 feat-008 手动导入导出同步；`db/*.db*` gitignore。`pnpm build` + `cargo check` + `pnpm tauri dev` + sqlite3 实测 11 表+FK CASCADE+WAL 全过。
+  4. **下一个 feat-004 标签管理**：首次 CRUD，跑通 `query`/`run` + `$1` 占位符 + 参数绑定（feat-003 全是 DDL 未实跑参数绑定）。依赖 feat-002/003，已解锁。
+- **当前 blocker**：无。DB 初始化跑通，11 表 + FK CASCADE + WAL 就位，后续 CRUD 有数据地基。
 - **前端代码基线**：feat-002 落地布局——`src/App.vue`（布局壳）、`src/main.ts`（引 tokens.css + 离线注册 lucide 图标）、`src/assets/styles/tokens.css`（design tokens）、`src/components/layout/`（AppSidebar/AppTopbar/PageShell）、`src/router/index.ts`（五路由懒加载）、`src/views/{home,todo,note,order,settings}/`（占位页用 PageShell）。feat-001 的 `src/views/HomeView.vue` 已迁至 `views/home/`。
 - **收尾纪律（每轮必做）**：验证命令跑过 → `logs/YYYY-MM-DD.md` 追加改动记录 → 本文件"当前已验证状态"与实际对齐（过期即改）。详见 `AGENTS.md` 初始化与交接一节。
 - **今日 harness 工程化落地**：参照 `hbrb-aigc-frontend` 的标准 harness 范式，为 nook 搭建同款：路由器式 `AGENTS.md`（14 条硬约束，按 Vue/Element Plus/Tauri 栈改写）+ 自包含 `CLAUDE.md` + `feature_list.json`（12 个 feature，对齐 PRD V1 范围）+ `feature_list.schema.json` + `init.sh`（pnpm install/build + cargo check + check-records）+ `scripts/check-records.sh`（适配 src/ + src-tauri/src，扫 .vue/.ts/.rs）+ `progress.md`（英文 Current State 头）+ `session-handoff.md` + `logs/2026-08-25.md` + `rules/`×4（project-structure/tauri-ipc/db/style）。PRD 评审修订同步记录于 `logs/2026-08-25.md`。
@@ -121,3 +121,17 @@
 - **改动文件**：`src-tauri/tauri.conf.json`。
 - **运行过的验证**：`cargo check`（3.69s，tauri-build 解析 conf）✅；`pnpm tauri dev` 烟测（新尺寸窗口启动无错误）✅。
 - **下一步最佳动作**：执行 feat-003 数据库初始化模块。
+
+### 2026-08-25 — feat-003 数据库初始化模块
+
+- **本轮目标**：执行 feat-003——程序启动连接 nook.db + PRAGMA（外键/WAL）+ 全部 CREATE TABLE IF NOT EXISTS + SQL 执行封装（参数绑定）。
+- **已完成**：
+  - **建表 DDL** `src/api/schema.ts`（新）：`SCHEMA_STATEMENTS: readonly string[]`，11 表 `CREATE TABLE IF NOT EXISTS`，与 PRD v1.1 对齐（`task_tag`/`note_tag`/`visualization`/`action_step`/`manifestation_log` 均 `FOREIGN KEY ... ON DELETE CASCADE`）；PRAGMA 不在数组，由 initDb 建表前先跑。
+  - **API 层封装** `src/api/db.ts`（新）：plugin-sql 唯一出口（#17）。`initDb()` 连接单例（`Database.load("sqlite:nook.db")`）→ `PRAGMA foreign_keys=ON`（#5）→ `PRAGMA journal_mode=WAL` → 循环跑 11 条建表；幂等 + 并发复用 `initPromise`，失败清 Promise 可重试。`getDb()` 懒兜底。`query<T>(sql, params)` 走泛型 `select<T[]>`免断言（#3）。`run(sql, params)` 返回 `{rowsAffected, lastInsertId?}`。`closeDb()` 供 feat-008。`readonly unknown[]` → `[...params]` 展开修 vue-tsc 报错。
+  - **启动接线** `src/App.vue`：`onMounted` 调 `initDb()`，失败 `ElMessage.error`（ElMessage 显式 import + style/css，规避 auto-imports.d.ts 重生成时序的类型报错）。
+  - **关键修复（权限）**：`src-tauri/capabilities/default.json` 加 `sql:allow-execute`——`sql:default` 只授权 `load`/`select`/`close`，**不含 `execute`**，建表全被拒（`sql.execute not allowed`），错误被 catch 吞到 ElMessage，表现为"DB 文件建了但 0 张表"。已写入 `rules/db.md`「权限」段备忘。改 capabilities 需重编 Rust。
+- **改动文件**：`src/api/schema.ts`（新）、`src/api/db.ts`（新）、`src/App.vue`、`src-tauri/capabilities/default.json`、`rules/db.md`。
+- **运行过的验证**：`pnpm build`（vue-tsc + vite build，index 747KB/gzip 152KB）✅；`cargo check`（capabilities 改后 6.30s+0.81s）✅；`pnpm tauri dev` 烟测（vite ready + 窗口 + 用户确认无报错）✅；sqlite3 实测 `~/Library/Application Support/com.nook.app/nook.db`：11 表全在 + `journal_mode`=wal + `foreign_key_list(task_tag)` 两条 CASCADE ✅；DDL 语法先在 `/tmp/ddltest.db` 独立验证全过（排除 DDL 问题，确认是权限问题）。
+- **提交记录**：feat-003 改动尚未 commit，待用户决定。
+- **已知风险或未解决问题**：① `$1` 占位符 feat-003 未实跑（全 DDL 无参数），首次 CRUD 验证留 feat-004；② 无 schema migration（V1 `IF NOT EXISTS` 够用）；③ DB 文件落 `app_config_dir`，dev/prod 一致，feat-008 导入前先 `closeDb()`。
+- **下一步最佳动作**：执行 feat-004 标签管理（首次 CRUD，跑通 `query`/`run` + `$1` 占位符 + 参数绑定）。

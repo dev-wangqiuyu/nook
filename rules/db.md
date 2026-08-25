@@ -13,6 +13,36 @@ await db.execute('PRAGMA journal_mode = WAL;')     // 提升并发读
 
 > ⚠️ SQLite **默认 `foreign_keys = OFF`**。不显式开，所有 `ON DELETE CASCADE` 都是摆设，删订单/任务/笔记时关联子表会留孤儿数据。这是硬约束 #5。
 
+## 权限（capabilities，feat-003 踩坑）
+
+`src-tauri/capabilities/default.json` 的 `sql:default` **只授权 `load` / `select` / `close`，不含 `execute`**。所有 `db.execute()`（PRAGMA、CREATE TABLE、INSERT/UPDATE/DELETE）会被运行时拒：`sql.execute not allowed. Permissions: sql:allow-execute`，错误被吞到 ElMessage 表现为"建表没生效"。
+
+必须显式加 `sql:allow-execute`：
+
+```jsonc
+"permissions": [
+  "sql:default",
+  "sql:allow-execute"   // 必加！default 不含 execute
+]
+```
+
+改 capabilities 后需重新编译 Rust（tauri 重建 ACL）。
+
+## dev/prod 数据库分离（feat-003 收尾）
+
+dev 与 prod 是**两套独立数据库**，靠 feat-008 手动导入/导出同步（PRD 设计如此，非自动同步）。
+
+| 环境 | 库路径 | 由谁决定 |
+|---|---|---|
+| `tauri dev` | `<项目根>/db/nook.db` | `vite.config.ts` define `__DEV_DB_PATH__` 注入绝对路径 |
+| `tauri build`（打包） | `app_config_dir/nook.db`（`~/Library/Application Support/com.nook.app/`） | plugin-sql 默认（相对名 → 拼 app_config_dir） |
+
+实现：`src/api/db.ts` 按 `import.meta.env.DEV` 选 URL——dev 传绝对路径（plugin-sql `PathBuf::push` 对绝对路径整体替换，覆盖默认 app_config_dir），prod 传相对名 `sqlite:nook.db` 落 app_config_dir。
+
+- `db/` 目录被 git 跟踪（含 `.gitkeep` + `README.md`），但 `db/*.db` / `*.db-wal` / `*.db-shm` 在根 `.gitignore` 忽略——dev 数据不进 git。
+- Navicat 连 dev 库用绝对路径：`<项目根>/db/nook.db`；连 prod 库用 `~/Library/Application Support/com.nook.app/nook.db`（Navicat 不展开 `~`，须填完整绝对路径，否则报 SQLite error 14）。
+- 打包产物不含 `db/` 目录，prod 走 app_config_dir，二者天然隔离。
+
 ## 参数绑定（防注入，硬约束 #3）
 
 ```ts

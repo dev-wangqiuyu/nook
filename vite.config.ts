@@ -8,6 +8,10 @@ import { fileURLToPath, URL } from "node:url";
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
 
+// dev 环境 SQLite 库绝对路径（prod 走 app_config_dir，不在此注入）。
+// plugin-sql 的 PathBuf::push 对绝对路径整体替换，故传绝对路径可覆盖默认 app_config_dir。
+const DEV_DB_PATH = fileURLToPath(new URL("./db/nook.db", import.meta.url));
+
 // https://vite.dev/config/
 export default defineConfig(async () => ({
   plugins: [
@@ -22,6 +26,11 @@ export default defineConfig(async () => ({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
+  },
+
+  // 注入 dev 库绝对路径常量（仅 dev 读，prod 用 'sqlite:nook.db' 落 app_config_dir）
+  define: {
+    __DEV_DB_PATH__: JSON.stringify(DEV_DB_PATH),
   },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
