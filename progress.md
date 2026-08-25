@@ -1,9 +1,9 @@
 ## Current State
 
-**Last Updated:** 2026-08-25 **Active Feature:** feat-004（feat-001/002/003 已完成）
-**What's Done / What's In Progress / What's Next:** feat-001/002/003 done；下一个 feat-004 标签管理（首次 CRUD）
-**Blockers / Risks:** 无（Rust 1.98 就绪、PRD 依赖装齐、布局壳落地、DB 初始化跑通、Composition API + 企业级规范写入）
-**Evidence of Completion:** `pnpm build` + `cargo check` + `pnpm tauri dev` 烟测全过 + sqlite3 实测 11 表；见 `logs/2026-08-25.md` feat-003 段
+**Last Updated:** 2026-08-25 **Active Feature:** feat-005（feat-001/002/003/004 已完成）
+**What's Done / What's In Progress / What's Next:** feat-001/002/003/004 done；下一个 feat-005 每日计划/待办模块
+**Blockers / Risks:** 无（Rust 1.98 就绪、PRD 依赖装齐、布局壳落地、DB 初始化跑通、首个 CRUD 链路验证、Composition API + 企业级 + SQL 注释规范写入）
+**Evidence of Completion:** `pnpm build` + `cargo check` + `pnpm tauri dev` 烟测 + sqlite3 实测 CRUD 落库；见 `logs/2026-08-25.md` feat-004 段
 **Notes for Next Session:** 详细当前状态与会话历史见下方「当前已验证状态」与「会话记录」段
 
 ---
@@ -27,8 +27,8 @@
   1. **feat-001 已完成**（项目依赖与脚手架扩充）。
   2. **feat-002 已完成**（基础布局）：侧边栏（首页/待办/笔记/订单+分隔线+设置，Iconify lucide 离线图标，仪式金 active 条）+ 顶栏搜索框（P1 占位）+ 内容区 RouterView + 五路由懒加载 + 各模块占位页（`SettingsView.vue` 等）+ design tokens（Quiet Stationery 暖纸极简）。`pnpm build` + `cargo check` + `pnpm tauri dev` 烟测全过。
   3. **feat-003 已完成**（数据库初始化模块）：`src/api/schema.ts`（11 表 DDL，FK CASCADE 全补）+ `src/api/db.ts`（API 层唯一出口：`initDb` 连接单例+PRAGMA+建表 / `getDb` / `query<T>` / `run` / `closeDb`，参数绑定）+ `src/App.vue`（onMounted initDb）。**关键修复**：`capabilities/default.json` 加 `sql:allow-execute`（`sql:default` 不含 execute，建表全被拒）。**dev/prod 分库**：dev 库落项目 `db/nook.db`（`import.meta.env.DEV` + `vite.config.ts` define `__DEV_DB_PATH__` 绝对路径），prod 库落 `app_config_dir`；两套独立库靠 feat-008 手动导入导出同步；`db/*.db*` gitignore。`pnpm build` + `cargo check` + `pnpm tauri dev` + sqlite3 实测 11 表+FK CASCADE+WAL 全过。
-  4. **下一个 feat-004 标签管理**：首次 CRUD，跑通 `query`/`run` + `$1` 占位符 + 参数绑定（feat-003 全是 DDL 未实跑参数绑定）。依赖 feat-002/003，已解锁。
-- **当前 blocker**：无。DB 初始化跑通，11 表 + FK CASCADE + WAL 就位，后续 CRUD 有数据地基。
+  4. **下一个 feat-005 每日计划/待办模块**：任务 CRUD + 4 状态 + 3 级优先级 + 今日视图 + 全部视图（状态/优先级/标签筛选），并接入 TG-04 打标签。依赖 feat-002/003/004，已解锁。
+- **当前 blocker**：无。首个 CRUD（标签）跑通，$1 参数绑定端到端验证，后续业务模块有可复用的 api 层范式 + 时间工具 + SQL 注释规范。
 - **前端代码基线**：feat-002 落地布局——`src/App.vue`（布局壳）、`src/main.ts`（引 tokens.css + 离线注册 lucide 图标）、`src/assets/styles/tokens.css`（design tokens）、`src/components/layout/`（AppSidebar/AppTopbar/PageShell）、`src/router/index.ts`（五路由懒加载）、`src/views/{home,todo,note,order,settings}/`（占位页用 PageShell）。feat-001 的 `src/views/HomeView.vue` 已迁至 `views/home/`。
 - **收尾纪律（每轮必做）**：验证命令跑过 → `logs/YYYY-MM-DD.md` 追加改动记录 → 本文件"当前已验证状态"与实际对齐（过期即改）。详见 `AGENTS.md` 初始化与交接一节。
 - **今日 harness 工程化落地**：参照 `hbrb-aigc-frontend` 的标准 harness 范式，为 nook 搭建同款：路由器式 `AGENTS.md`（14 条硬约束，按 Vue/Element Plus/Tauri 栈改写）+ 自包含 `CLAUDE.md` + `feature_list.json`（12 个 feature，对齐 PRD V1 范围）+ `feature_list.schema.json` + `init.sh`（pnpm install/build + cargo check + check-records）+ `scripts/check-records.sh`（适配 src/ + src-tauri/src，扫 .vue/.ts/.rs）+ `progress.md`（英文 Current State 头）+ `session-handoff.md` + `logs/2026-08-25.md` + `rules/`×4（project-structure/tauri-ipc/db/style）。PRD 评审修订同步记录于 `logs/2026-08-25.md`。
@@ -135,3 +135,21 @@
 - **提交记录**：feat-003 改动尚未 commit，待用户决定。
 - **已知风险或未解决问题**：① `$1` 占位符 feat-003 未实跑（全 DDL 无参数），首次 CRUD 验证留 feat-004；② 无 schema migration（V1 `IF NOT EXISTS` 够用）；③ DB 文件落 `app_config_dir`，dev/prod 一致，feat-008 导入前先 `closeDb()`。
 - **下一步最佳动作**：执行 feat-004 标签管理（首次 CRUD，跑通 `query`/`run` + `$1` 占位符 + 参数绑定）。
+
+### 2026-08-25 — feat-004 标签管理（首个 CRUD，跑通 $1 参数绑定）
+
+- **本轮目标**：执行 feat-004——标签 CRUD（TG-01~TG-05），验证 feat-003 封装的 `query`/`run` + `$1` 参数绑定端到端跑通。
+- **已完成**：
+  - **类型** `src/types/tag.ts`（新）：`Tag` + `TagWithCount`。
+  - **时间工具** `src/utils/time.ts`（新）：`localNow()` / `localToday()`，多模块复用。
+  - **API 层** `src/api/tag.ts`（新）：`listTags`（LEFT JOIN + COUNT DISTINCT 算关联数）/ `getTag` / `createTag`（唯一校验 + INSERT `$1,$2`）/ `updateTag`（唯一校验排除自身 + UPDATE）/ `deleteTag`（FK CASCADE 自动清子表）。**每条 SQL 带完整注释**。
+  - **容器组件** `src/components/tag/TagManager.vue`（新）：列表+新建+行内改名（v-focus）+内联删除确认（有关联时 ElMessageBox 警告级联清理）。Quiet Stationery 样式。
+  - **标签页** `src/views/tags/TagsView.vue`（新）+ 路由 `/tags` + 侧边栏「标签」导航项——**入口从设置页升级为侧边栏一等模块**（用户决策，偏离 PRD S-06 默认）。
+  - **设置页** 移除 TagManager，回占位（feat-010 落地）。
+  - **依赖** `es-toolkit@1.51.0`（用户要求装的工具库，本 feat 未直接用）。
+  - **harness 规则**：硬约束 #18（SQL 必须写清楚注释）+ `rules/db.md`「SQL 注释规范」段；PRD TG-05/S-06 改为侧边栏标签页。
+- **改动文件**：`src/types/tag.ts`、`src/utils/time.ts`、`src/api/tag.ts`、`src/components/tag/TagManager.vue`、`src/views/tags/TagsView.vue`、`src/views/settings/SettingsView.vue`、`src/router/index.ts`、`src/components/layout/AppSidebar.vue`、`AGENTS.md`、`rules/db.md`、`PRD产品需求文档.md`、`feature_list.json`、`package.json`、`pnpm-lock.yaml`。
+- **运行过的验证**：`pnpm build`（TagsView 66KB 独立 chunk）✅；`cargo check` 0.65s ✅；`pnpm tauri dev` 烟测 HMR 正常 ✅；**$1 参数绑定实跑**：用户在 UI 创建「测试」标签 → sqlite3 实测 tag 表落库（id 1）✅；listTags 查询用 sqlite3 灌测试数据验证关联数正确（无关联返 0）✅。
+- **提交记录**：未 commit，待用户决定。
+- **已知风险或未解决问题**：① TG-04 打标签到待办/笔记要等 feat-005/006 有宿主；② updateTag/deleteTag 用同条 run()+$1 路径（createTag 已实跑证明），改名/删除 UI 流程可进一步手测；③ es-toolkit 已装未用。
+- **下一步最佳动作**：执行 feat-005 每日计划/待办模块（任务 CRUD + 4 状态 + 优先级 + 今日视图 + 标签筛选 + 接入 TG-04 打标签）。

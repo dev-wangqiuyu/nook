@@ -16,5 +16,6 @@ declare module 'vue' {
     PageShell: typeof import('./src/components/layout/PageShell.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TagManager: typeof import('./src/components/tag/TagManager.vue')['default']
   }
 }

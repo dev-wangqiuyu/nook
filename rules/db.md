@@ -56,6 +56,33 @@ await db.execute(`INSERT INTO task (title) VALUES ('${title}')`)  // SQL 注入
 - 占位符用 `$1, $2`（plugin-sql 走 sqlx）。
 - 任何用户输入拼进 SQL 都必须走参数绑定，无例外。
 
+## SQL 注释规范（硬约束 #18）
+
+每条 `query`/`run` 的 SQL 必须写清楚注释，便于团队（含未来 agent）学习查阅与排查。注释模板：
+
+```ts
+// 业务：<这条 SQL 解决什么问题>
+// SQL 要点：
+// 1. <子句作用：为什么用 LEFT JOIN / WHERE 条件 / GROUP BY / ORDER BY>
+// 2. <$1/$2 参数含义>
+// 3. <边界/注意：如 rowsAffected 判定、空值处理>
+const rows = await query<Tag>(`
+  SELECT ...
+  FROM ...
+  LEFT JOIN ...  -- 左连接保行，即使无关联也返回
+  WHERE id = $1  -- $1 = 标签 id
+  GROUP BY ...
+`);
+```
+
+要点：
+- **业务意图**：这条 SQL 为什么存在，回答"做什么"。
+- **关键子句**：JOIN 类型（LEFT 保行 / INNER 过滤）、WHERE 条件、GROUP BY 分组、ORDER BY 排序——每个非常规子句说清为什么这么写。
+- **参数含义**：`$1`/`$2` 分别对应什么业务字段，不让人猜。
+- **边界**：`rowsAffected === 0` 判定、空数组、`?? null` 处理等。
+- 简单到一目了然的单行 SQL（如 `SELECT * FROM app_setting`）可只写一行业务注释，不必过度。
+- 参考实现：`src/api/tag.ts`（每条 SQL 都带完整注释）。
+
 ## 时间字段
 
 - 统一 ISO 8601 字符串，**存本地时间**（不上云、不跨时区，存 UTC 反而徒增转换）：`YYYY-MM-DD HH:mm:ss`。

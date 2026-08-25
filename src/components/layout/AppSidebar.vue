@@ -11,6 +11,7 @@ const mainNav: NavItem[] = [
   { to: "/", label: "首页", icon: "lucide:layout-dashboard" },
   { to: "/todo", label: "待办", icon: "lucide:list-checks" },
   { to: "/note", label: "笔记", icon: "lucide:notebook" },
+  { to: "/tags", label: "标签", icon: "lucide:tag" },
   { to: "/order", label: "订单", icon: "lucide:sparkles" },
 ];
 const settingsNav: NavItem = { to: "/settings", label: "设置", icon: "lucide:settings" };
@@ -143,7 +144,7 @@ const settingsNav: NavItem = { to: "/settings", label: "设置", icon: "lucide:s
   margin: 0 8px var(--space-sm);
 }
 .nav-item.settings {
-  --i: 4;
+  --i: 5;
 }
 
 @keyframes nav-in {

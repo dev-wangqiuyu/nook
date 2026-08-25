@@ -131,6 +131,7 @@ cd src-tauri && cargo check   # Rust 后端编译检查
 15. ✅ 设计前端页面前必须先用 Skill 工具调用 `frontend-design` skill（见 [rules/style.md](rules/style.md)「设计流程」段，含与白色极简约束的调和）
 16. ❌ 禁 Options API：所有 .vue 组件必须用 `<script setup lang="ts">`，props/emit 用 `defineProps<{}>()`/`defineEmits<{}>()` 泛型签名（见 [rules/vue.md](rules/vue.md)）
 17. ❌ 禁跨层反向依赖：view→composable→api→plugin 单向分层，下层不 import 上层；展示组件不直接调 plugin-sql/invoke，数据获取下沉容器组件+api 层（见 [rules/project-structure.md](rules/project-structure.md)「企业级分层」段 + [rules/vue.md](rules/vue.md)「组件化」段）
+18. ✅ SQL 必须写清楚注释：每条 `query`/`run` 的 SQL 前用注释说明业务意图 + 关键子句作用（JOIN 类型/WHERE/GROUP BY/ORDER BY）+ `$1`/`$2` 参数含义，便于学习查阅与排查（见 [rules/db.md](rules/db.md)「SQL 注释规范」段）
 
 ## 专题文档
 

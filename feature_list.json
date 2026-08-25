@@ -27,10 +27,10 @@
     {
       "id": "feat-004",
       "name": "标签管理（基础功能）",
-      "description": "PRD TG-01~TG-05。标签 CRUD（name 唯一校验），打标签（待办/笔记多对多），删除标签级联清理 task_tag/note_tag。设置页或侧边栏展示标签列表及关联数量。",
+      "description": "PRD TG-01~TG-05。标签 CRUD（name 唯一校验），打标签（待办/笔记多对多），删除标签级联清理 task_tag/note_tag。侧边栏「标签」一级导航页展示标签列表及关联数量（用户决策从设置页升级为一等模块）。",
       "dependencies": ["feat-003"],
-      "status": "not-started",
-      "evidence": ""
+      "status": "done",
+      "evidence": "src/types/tag.ts+src/utils/time.ts+src/api/tag.ts(CRUD+$1绑定+LEFT JOIN COUNT关联数)+src/components/tag/TagManager.vue+src/views/tags/TagsView.vue+侧边栏标签导航+路由/tags;pnpm build ✅;cargo check ✅;tauri dev 烟测 ✅;sqlite3 实测建表后 createTag 落库+listTags 关联数正确+级联清理验证"
     },
     {
       "id": "feat-005",
