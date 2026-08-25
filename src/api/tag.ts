@@ -23,6 +23,34 @@ import type { Tag, TagWithCount } from "@/types/tag";
 //   - FULL  JOIN：两表都全留；SQLite 3.39+ 才支持，本场景不需要。
 // 结论：主表 tag 在左、关联表在右、要保留主表全部 → LEFT JOIN。
 //
+// 【如何区分哪是左表？哪是右表？——看写的位置，与表本身无关】
+// 左/右完全是"SQL 语法位置"决定的，跟表叫什么、数据多少都无关：
+//   FROM A JOIN B ON ...
+//     - A 紧跟 FROM 后 → 左表（通常是你"要全部保留"的主表）
+//     - B 紧跟 JOIN 后 → 右表（来"附带匹配信息"的表）
+// LEFT JOIN 的语义就一句话："左边那张表的行一个都不丢"。
+// 所以本查询 tag 写在 FROM 后 = 左表（要一个不丢的那张），task_tag 写在 JOIN 后 = 右表。
+// 口诀：要保哪张表的全部行，就把那张写左边；LEFT JOIN → 保左边。
+// 你完全能通过调整写表顺序来控制哪张被全保留。
+//
+// 【实际开发里 LEFT JOIN 用得最多吗？为什么？】
+// 是的。四种 JOIN 在实际项目里的用量大致：INNER JOIN 与 LEFT JOIN 占绝大多数，
+// RIGHT JOIN / FULL JOIN 很少见。原因：
+//   1. 业务模式天然如此——绝大多数查询是"以一张主表为轴，附带关联信息"：
+//      列全部标签 + 关联数（tag 在左）、列全部用户 + 订单数（用户在左）、
+//      列全部订单 + 商品明细（订单在左）。"要全部保留的那张"放左边、用 LEFT JOIN 最自然。
+//   2. RIGHT JOIN 几乎不用——任何 A RIGHT JOIN B 都等价于 B LEFT JOIN A
+//      （把两表换个位置用 LEFT 即可）。既然能换位置统一用 LEFT，团队就约定用 LEFT，
+//      代码风格一致、更易读；很多团队直接规范"禁止 RIGHT JOIN"。
+//      且老版 SQLite（3.39 前）根本不支持 RIGHT JOIN。
+//   3. LEFT JOIN 语义更符合直觉——"主表全留，关联信息能附就附、附不上就 NULL"，
+//      正好是"列表 + 可选关联"的标准需求；INNER JOIN 会丢没关联的行，做"列表"反而不合适。
+// 选择决策树：
+//   - 要全部主表行（含没关联的孤儿行）→ LEFT JOIN
+//   - 只要两表都匹配的行（交集）       → INNER JOIN（写 JOIN 即默认 INNER）
+//   - 要右表全部行                     → RIGHT JOIN（都改写成 LEFT，实际不用）
+//   - 两表都要全部                     → FULL JOIN（极少用，SQLite 3.39+ 才支持）
+//
 // 【为什么 COUNT(DISTINCT ...) 而不是 COUNT(...)】
 // 同时 LEFT JOIN 了 task_tag 和 note_tag 两张表，会产生笛卡尔积：
 //   一个标签关联 2 待办 + 3 笔记 → 中间结果 2×3=6 行。

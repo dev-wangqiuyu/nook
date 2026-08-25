@@ -161,3 +161,19 @@
 - **改动文件**：`src/api/tag.ts`。
 - **运行过的验证**：`pnpm build` ✅（注释级改动）。
 - **下一步最佳动作**：执行 feat-005 每日计划/待办模块。
+
+### 2026-08-25 — feat-004 收尾：listTags 注释补「如何区分左右表 + LEFT JOIN 实际用得最多」
+
+- **本轮目标**：用户学完 JOIN 四类型后追问如何区分左表/右表 + LEFT JOIN 是否实际用得最多，按硬约束 #18 把讲解写进 listTags 注释。
+- **已完成**：`src/api/tag.ts` 的 listTags 注释加两节——「如何区分左表/右表」（语法位置决定，FROM 后=左，JOIN 后=右）+「LEFT JOIN 实际用得最多吗？为什么」（主表为轴业务模式天然在左、RIGHT 可改写成 LEFT 故不用、SQLite 3.39 前不支持 RIGHT）+ JOIN 选择决策树。
+- **改动文件**：`src/api/tag.ts`。
+- **运行过的验证**：`pnpm build`（vue-tsc + vite build）✅ 2.39s 无类型错误。
+- **下一步最佳动作**：执行 feat-005 每日计划/待办模块。
+
+### 2026-08-25 — feat-004 收尾：rules/db.md JOIN 速查段扩充为「JOIN 全家桶」
+
+- **本轮目标**：用户追问"inner join 是啥？还有啥 join"，按硬约束 #18 把 JOIN 全家族整理进 rules/db.md 存档。
+- **已完成**：`rules/db.md` 原「JOIN 速查（左连接/右连接）」段扩充为「JOIN 全家桶」——加 INNER JOIN 详解（交集语义，`JOIN` 默认即 INNER）、CROSS JOIN（笛卡尔积 m×n、`ON 1=1` 退化、漏写 ON 行数爆炸坑）、SELF JOIN（自己连自己配别名处理树形层级）、NATURAL JOIN（按同名列自动连，工程别用易错）；全类型对照表补全 7 种 JOIN；选择决策树与一句话总结同步补齐。
+- **改动文件**：`rules/db.md`。
+- **运行过的验证**：check-records 门禁通过（文档级改动，未改代码基线）。
+- **下一步最佳动作**：执行 feat-005 每日计划/待办模块。
