@@ -43,6 +43,26 @@ nook/
 - **IPC 封装**：所有 Tauri 命令调用、plugin-sql 执行，统一在 `src/api/` 封装，组件不直接 `invoke` 或裸跑 SQL。
 - **页面文件夹化**：每个模块在 `views/<module>/` 下组织，模块内的子组件、composables 就近放，不堆 `components/` 大杂烩。
 
+## 企业级分层与依赖方向
+
+- **分层（依赖单向，下层不引用上层）**：
+  ```
+  views/（页面/容器组件）
+     ↓ 调
+  composables/（业务逻辑 useXxx）
+     ↓ 调
+  api/（Tauri IPC + plugin-sql 封装，唯一出口）
+     ↓ 调
+  Tauri 插件（plugin-sql/dialog/fs）/ Rust 命令
+  ```
+  - `api/` 不 import `views/` 或 `composables/`；`composables/` 不 import `views/`。反向引用 = 架构错误（硬约束 #17）。
+- **数据流**：view 调 composable，composable 调 `api/`，`api/` 是 plugin-sql / `invoke` 的唯一出口。**组件不裸跑 SQL、不直接 invoke**（硬约束 #3/#4 兜底，此条明示分层归属）。
+- **状态归属**：跨模块共享态用 Pinia store（`stores/<module>.ts`，`useXxxStore`）；单组件私有态用 `ref`/`reactive`。store 只放状态与操作，不放 UI/路由逻辑。
+- **类型**：业务类型集中 `types/<module>.ts`，跨层共享；`api/` 返回值带类型，上层消费不丢类型、不 `as` 强转。
+- **常量提取**：枚举/魔数/固定文案提为常量或 `enum`（状态码、优先级、订单状态、任务状态等），不散落魔法字符串/数字。
+- **错误处理**：不静默吞错（禁空 `catch`）。可预期错误（文件不存在、校验失败、唯一约束冲突）上抛或走 UI 提示（`ElMessage`）；不为不可能场景写防御性 fallback（同 AGENTS 通用纪律）。
+- **不可变数据**：DB 取回的数据视为不可变，更新走"取→改→写回"，不在原对象原地 mutate 后再存；列表更新返回新数组赋给响应式引用，依赖 Vue 响应式覆盖。
+
 ## 命名
 
 - 组件文件：`PascalCase.vue`（如 `TaskCard.vue`）

@@ -12,9 +12,13 @@
   "app": {
     "windows": [
       {
-        "title": "nook",
-        "width": 800,
-        "height": 600
+        "title": "Nook",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 640,
+        "resizable": true,
+        "center": true
       }
     ],
     "security": {

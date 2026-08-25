@@ -27,6 +27,18 @@
 - composable 返回响应式 `ref` / `readonly(ref)`，不裸返回内部可变状态。
 - 抽 composable 的门槛：**逻辑被 ≥2 处复用，或单组件逻辑过载需拆分**。不做过早抽象（硬约束：三行相似代码优于一个提前抽象）。
 
+## 组件化开发范式（企业级）
+
+- **单一职责**：一个组件只做一件事。页面级组件（`views/`）负责组合与编排，不放重业务逻辑；复杂逻辑下沉 composable 或 Pinia store。
+- **展示组件 vs 容器组件**：
+  - **展示组件**（dumb）：只渲染 props + emit 事件，**不调** `api/`、不跑 SQL、不持远程态。纯 UI，可复用、可独立预览。
+  - **容器组件**（smart，通常即页面级）：持有数据、调 `src/api/`、把数据喂给展示组件、监听其事件。数据获取与 IPC 不进展示组件。
+- **props down / events up**：父→子传 props，子→父用 `defineEmits` 通知。子组件**禁直接改 props**（要双向用 `defineModel`，否则 emit 交父改）。跨多级共享走 Pinia store，不用 `provide/inject` 除非确有跨级主题态（如布局/主题）。
+- **插槽优先于 prop 传模板**：内容分发用 `<slot>`（含具名/作用域插槽），不把大段模板或渲染函数当 prop 传。
+- **复用门槛**：组件抽离需 **≥2 处复用**；一次性展示就地写，不预抽。跨模块复用的外壳（如 `PageShell`）才进 `components/`。
+- **公开 API 收敛**：`defineExpose` 仅暴露父级确需调用的方法；内部 ref/方法不外泄，保持封装。
+- **组合优于继承**：用 composable 组合逻辑，不写组件继承（Vue 不鼓励 `extends` 组件）。
+
 ## 目录与命名（配合 [project-structure.md](project-structure.md)）
 
 - 组件文件 `PascalCase.vue`；页面级组件放 `src/views/<module>/`，通用组件放 `src/components/`（按职能分子目录，如 `components/layout/`）。

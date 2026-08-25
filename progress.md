@@ -105,3 +105,19 @@
 - **提交记录**：feat-002 + Composition API 规范尚未 commit，待用户决定。
 - **已知风险或未解决问题**：① index chunk 698KB（lucide 1844 图标离线打包），V1 可接受，后续若需瘦身可改按需 `addIcon` 只注册用到的；② 顶部搜索为占位，实时过滤在 feat-012；③ 字体走系统栈（离线禁网络字体），跨平台衬线回退 Georgia 可接受。
 - **下一步最佳动作**：执行 feat-003 数据库初始化模块（连接 nook.db + PRAGMA + 建表 + SQL 封装）。
+
+### 2026-08-25 — harness: 企业级开发范式 + 组件化
+
+- **本轮目标**：按用户要求，把企业级分层/组件化开发范式写进 harness。
+- **已完成**：`rules/vue.md` 加「组件化开发范式」段（展示vs容器、props-down/events-up、插槽优先、复用门槛、defineExpose 收敛）；`rules/project-structure.md` 加「企业级分层与依赖方向」段（单向分层、api 层唯一出口、状态归属、类型、常量提取、错误处理、不可变）；`AGENTS.md` 加硬约束 #17（禁跨层反向依赖）+ 专题文档表更新。
+- **改动文件**：`rules/vue.md`、`rules/project-structure.md`、`AGENTS.md`。
+- **运行过的验证**：纯文档，无构建。check-records 未改代码不受影响。
+- **下一步最佳动作**：执行 feat-003 数据库初始化模块。
+
+### 2026-08-25 — 窗口尺寸调大 + 企业级规则收尾
+
+- **本轮目标**：① 窗口调大；② 提交企业级分层/组件化规则 + 窗口改动。
+- **已完成**：`src-tauri/tauri.conf.json` 窗口 800×600 → 1200×800，加 minWidth/minHeight/resizable/center，标题 → Nook。
+- **改动文件**：`src-tauri/tauri.conf.json`。
+- **运行过的验证**：`cargo check`（3.69s，tauri-build 解析 conf）✅；`pnpm tauri dev` 烟测（新尺寸窗口启动无错误）✅。
+- **下一步最佳动作**：执行 feat-003 数据库初始化模块。

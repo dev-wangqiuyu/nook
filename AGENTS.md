@@ -130,12 +130,14 @@ cd src-tauri && cargo check   # Rust 后端编译检查
 14. ❌ 禁 Element Plus 废弃 API 与静态调用（按 PRD 选用稳定 API，弹窗用 ElMessageBox / ElMessage）
 15. ✅ 设计前端页面前必须先用 Skill 工具调用 `frontend-design` skill（见 [rules/style.md](rules/style.md)「设计流程」段，含与白色极简约束的调和）
 16. ❌ 禁 Options API：所有 .vue 组件必须用 `<script setup lang="ts">`，props/emit 用 `defineProps<{}>()`/`defineEmits<{}>()` 泛型签名（见 [rules/vue.md](rules/vue.md)）
+17. ❌ 禁跨层反向依赖：view→composable→api→plugin 单向分层，下层不 import 上层；展示组件不直接调 plugin-sql/invoke，数据获取下沉容器组件+api 层（见 [rules/project-structure.md](rules/project-structure.md)「企业级分层」段 + [rules/vue.md](rules/vue.md)「组件化」段）
 
 ## 专题文档
 
 | 文档 | 内容 | 何时读 |
 |---|---|---|
-| [rules/project-structure.md](rules/project-structure.md) | 目录结构、src/ 与 src-tauri/ 边界、模块组织 | 建新页面/模块时 |
+| [rules/project-structure.md](rules/project-structure.md) | 目录结构、src/ 与 src-tauri/ 边界、模块组织、企业级分层与依赖方向 | 建新页面/模块时 |
+| [rules/vue.md](rules/vue.md) | Vue 3 `<script setup>` / 组合式函数 / props-emits / 组件化范式 / 命名 | 写任何 .vue 组件时 |
 | [rules/tauri-ipc.md](rules/tauri-ipc.md) | plugin-sql / dialog / fs / 托盘 用法、IPC 命令、capabilities | 调 Tauri 原生能力时 |
 | [rules/db.md](rules/db.md) | SQLite 操作规范、PRAGMA、参数绑定、时间格式、级联、导入校验 | 写数据库相关代码时 |
 | [rules/style.md](rules/style.md) | Element Plus + 白色极简、Iconify 用法、布局规则、frontend-design skill 流程与调和 | 写界面/样式时 |
