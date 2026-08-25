@@ -65,3 +65,11 @@
 - **提交记录**：无（feat-001 改动尚未 commit，待用户决定。仓库已建为公开开源，git@github.com:dev-wangqiuyu/nook.git）。
 - **已知风险或未解决问题**：① `src-tauri/src/lib.rs` 仍留模板自带的 `greet` command（死代码无害，feat-002 清理）；② CSP 仍为 null（纯本地可接受，接外部内容前再收紧）；③ 无 schema migration（V1 够用）；④ `vue-router` latest tag 解析到 5.x（major），已验证可用但留意后续 API 变动。
 - **下一步最佳动作**：执行 feat-002 基础布局（侧边栏 + 内容区 + 顶部搜索 + Vue Router 路由表），依赖 feat-001 已解锁。
+
+### 2026-08-25 — harness 规则扩充：接入 frontend-design skill
+
+- **本轮目标**：按用户要求，把 `frontend-design` skill 接进 harness，使后续前端页面设计强制走该 skill。
+- **已完成**：`AGENTS.md` 加硬约束 #15 + 专题文档表 style.md 行更新；`rules/style.md` 加「设计流程：frontend-design skill」段（含与白色极简约束 #10 的优先级调和：PRD > skill，冲突时白色极简为准）。
+- **改动文件**：`AGENTS.md`、`rules/style.md`。
+- **运行过的验证**：无构建（纯文档）。`check-records.sh` 仅扫代码 mtime，本次未改代码，基线不受影响。
+- **下一步最佳动作**：执行 feat-002 基础布局——动手前先调用 `frontend-design` skill（硬约束 #15）。
