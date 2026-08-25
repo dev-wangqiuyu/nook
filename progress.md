@@ -185,3 +185,11 @@
 - **改动文件**：`docs/sql-tutorial.md`（新）。
 - **运行过的验证**：纯文档新增，check-records 门禁不受影响。
 - **下一步最佳动作**：执行 feat-005 每日计划/待办模块。
+
+### 2026-08-25 — SQL 学习文档补「先认识 SQLite」章
+
+- **本轮目标**：用户要求把 SQLite 也讲一下（好处/优缺点/为何 Nook 不用 MySQL）。
+- **已完成**：`docs/sql-tutorial.md` 开头加「〇、先认识 SQLite」章——SQLite 是什么、vs MySQL/PostgreSQL 运行模型对比表、八优点、五缺点、Nook 选 SQLite 六点理由 + 反向适用场景。
+- **改动文件**：`docs/sql-tutorial.md`。
+- **运行过的验证**：纯文档，check-records 不受影响。
+- **下一步最佳动作**：执行 feat-005 每日计划/待办模块。
