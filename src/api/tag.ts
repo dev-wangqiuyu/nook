@@ -9,19 +9,37 @@ import type { Tag, TagWithCount } from "@/types/tag";
 // ──────────────────────────────────────────────────────────────
 // 标签列表（含关联数量）
 // ──────────────────────────────────────────────────────────────
-// 业务：列出所有标签，并统计每个标签被多少条待办、多少条笔记使用。
+// 业务：列出【全部】标签，并统计每个标签被多少条待办、多少条笔记使用。
+//       必须包含"从没被用过"的新建标签（关联数为 0 也要列出）。
 //
-// SQL 要点：
-// 1. LEFT JOIN task_tag / note_tag —— 用左连接，即使标签没有任何关联，也保留这一行
-//    （INNER JOIN 会把没被用过的标签过滤掉，不符合"列出全部"的需求）。
-// 2. COUNT(DISTINCT tt.task_id) —— 去重计数。因为同时 join 了 task_tag 和 note_tag 两张表，
-//    会产生笛卡尔积（一个标签关联 2 待办 + 3 笔记 → 6 行），不去重会算成 6。
-//    DISTINCT tt.task_id 只数不同的 task_id，得到真实的待办数。
-// 3. GROUP BY t.id, t.name, t.created_at —— 按标签分组，每个标签一行结果。
-//    （SQLite 主键即 id，理论上 GROUP BY t.id 足够，但显式列出 SELECT 的非聚合列更规范、
-//    兼容严格模式数据库。）
-// 4. ORDER BY t.name —— 标签名按字母/拼音序排，列表稳定。
-// 5. 无参数 —— 纯查询，不涉及用户输入，无需绑定。
+// 【为什么必须用 LEFT JOIN，不能用 INNER JOIN】
+// JOIN 四种类型回顾（以 tag t LEFT JOIN task_tag tt 为例）：
+//   - INNER JOIN：只保留两表都匹配的行。tag 在 task_tag 里没有匹配行 → 该标签被丢弃。
+//                 → 刚建还没用过的标签会从列表消失，不符合"列全部"需求。
+//   - LEFT  JOIN：保留【左表 tag】全部行，右表 task_tag 无匹配则其列填 NULL。
+//                 → 未使用标签也保留，COUNT 结果为 0。本查询要的就是这个。
+//   - RIGHT JOIN：保留【右表】全部行，和 LEFT 完全对称——把两表换位用 LEFT JOIN 即等价，
+//                 故业界几乎不用 LEFT 之外的方向。SQLite 3.39 前甚至不支持 RIGHT。
+//   - FULL  JOIN：两表都全留；SQLite 3.39+ 才支持，本场景不需要。
+// 结论：主表 tag 在左、关联表在右、要保留主表全部 → LEFT JOIN。
+//
+// 【为什么 COUNT(DISTINCT ...) 而不是 COUNT(...)】
+// 同时 LEFT JOIN 了 task_tag 和 note_tag 两张表，会产生笛卡尔积：
+//   一个标签关联 2 待办 + 3 笔记 → 中间结果 2×3=6 行。
+//   COUNT(tt.task_id) 会数 6（把笔记乘进来了），COUNT(DISTINCT tt.task_id) 才得真实 2。
+//   DISTINCT 只数不同的 task_id / note_id，滤掉笛卡尔重复。
+//
+// 【等价写法（子查询，更直观但性能相近）】
+//   SELECT t.id, t.name, t.created_at,
+//     (SELECT COUNT(*) FROM task_tag tt WHERE tt.tag_id = t.id) AS task_count,
+//     (SELECT COUNT(*) FROM note_tag nt WHERE nt.tag_id = t.id) AS note_count
+//   FROM tag t ORDER BY t.name;
+//   ——无笛卡尔、免 DISTINCT，可读性更好；本文件用 JOIN 版作 LEFT JOIN 教学范例。
+//
+// 其他要点：
+//   - GROUP BY t.id, t.name, t.created_at：按标签分组，每个标签一行。显式列出非聚合列更规范。
+//   - ORDER BY t.name：标签名按字母/拼音序，列表稳定。
+//   - 无参数：纯查询，不涉及用户输入，无需绑定。
 export async function listTags(): Promise<TagWithCount[]> {
   return query<TagWithCount>(`
     SELECT

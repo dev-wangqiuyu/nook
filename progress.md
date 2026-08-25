@@ -153,3 +153,11 @@
 - **提交记录**：未 commit，待用户决定。
 - **已知风险或未解决问题**：① TG-04 打标签到待办/笔记要等 feat-005/006 有宿主；② updateTag/deleteTag 用同条 run()+$1 路径（createTag 已实跑证明），改名/删除 UI 流程可进一步手测；③ es-toolkit 已装未用。
 - **下一步最佳动作**：执行 feat-005 每日计划/待办模块（任务 CRUD + 4 状态 + 优先级 + 今日视图 + 标签筛选 + 接入 TG-04 打标签）。
+
+### 2026-08-25 — feat-004 收尾：listTags JOIN 讲解写入注释
+
+- **本轮目标**：按用户要求讲解左连接/右连接，写进 listTags 注释供学习查阅。
+- **已完成**：`src/api/tag.ts` 的 listTags 注释扩充——LEFT JOIN 必要性（INNER 会丢未用标签）、JOIN 四类型回顾（INNER/LEFT/RIGHT/FULL）、COUNT(DISTINCT) 原因（双 LEFT JOIN 笛卡尔积）、等价子查询写法。
+- **改动文件**：`src/api/tag.ts`。
+- **运行过的验证**：`pnpm build` ✅（注释级改动）。
+- **下一步最佳动作**：执行 feat-005 每日计划/待办模块。
